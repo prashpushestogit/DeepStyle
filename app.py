@@ -11,13 +11,12 @@ from numpy.linalg import norm
 import faiss
 import boto3
 
-# Load AWS secrets (ensure your .streamlit/secrets.toml is set up)
+
 aws_access_key = st.secrets["aws"]["AWS_ACCESS_KEY_ID"]
 aws_secret_key = st.secrets["aws"]["AWS_SECRET_ACCESS_KEY"]
 region = st.secrets["aws"]["AWS_REGION"]
 bucket = st.secrets["aws"]["S3_BUCKET"]
 
-# Connect to S3
 s3 = boto3.client(
     "s3",
     aws_access_key_id=aws_access_key,
@@ -25,7 +24,7 @@ s3 = boto3.client(
     region_name=region
 )
 
-# Load features and filenames
+
 def load_pickle_from_s3(bucket, key):
     response = s3.get_object(Bucket=bucket, Key=key)
     return pickle.load(response['Body'])
@@ -33,7 +32,7 @@ def load_pickle_from_s3(bucket, key):
 feature_list = np.array(load_pickle_from_s3(bucket, "features.pkl"))
 filenames = load_pickle_from_s3(bucket, "filesname.pkl")
 
-# Load the ResNet50 model
+
 model = ResNet50(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
 model.trainable = False
 model = tensorflow.keras.Sequential([
@@ -41,7 +40,7 @@ model = tensorflow.keras.Sequential([
     GlobalMaxPooling2D()
 ])
 
-st.title('Fashion Recommender System')
+st.title('DeepStyle-Fashion Recommender System')
 
 def save_uploaded_file(uploaded_file):
     try:
@@ -74,7 +73,7 @@ def recommend(features, feature_list, k=6):
     distances, indices = index.search(features.reshape(1, -1), k)
     return indices
 
-# MAIN LOGIC
+
 uploaded_file = st.file_uploader("Choose an image")
 if uploaded_file is not None:
     save_path = save_uploaded_file(uploaded_file)
