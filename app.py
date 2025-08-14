@@ -40,7 +40,7 @@ model = tensorflow.keras.Sequential([
     GlobalMaxPooling2D()
 ])
 
-st.title('DeepStyle-Fashion Recommender System')
+st.title('Fashion Recommender System')
 
 def save_uploaded_file(uploaded_file):
     try:
